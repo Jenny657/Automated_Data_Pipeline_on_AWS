@@ -1,14 +1,14 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# # local df collection
-
-# ## city_table
-
-# In[3]:
-
-
 import pandas as pd
+import requests
+from bs4 import BeautifulSoup
+import pytz
+import re
+from datetime import datetime, date, timedelta
+from pytz import timezone
+
+# local df collection
+
+# city_table
 
 # creates a dictionary with city_name keys and country code values
 city_dic = {
@@ -16,32 +16,13 @@ city_dic = {
     "country_code": ["DE", "DE", "DE"]
 }
 
-
-# In[4]:
-
-
 city_df = pd.DataFrame(city_dic)
 city_df 
-
-
-# In[58]:
-
 
 City_df.info()
 
 
-# ## population_table
-
-# In[5]:
-
-
-import requests
-from bs4 import BeautifulSoup
-import pandas as pd
-import pytz
-import re
-from datetime import datetime
-
+#population_table
 def get_population(soup):
     # Locate the table header element with the text 'Population'
     population_elem = soup.select_one('th.infobox-header:-soup-contains("Population")')
@@ -92,41 +73,15 @@ def recreate_wiki(cities):
     # Return the DataFrame
     return cities_df
 
-
-# In[6]:
-
-
 list_of_cities = ['Hamburg', 'Berlin', 'Munich']
 pop_df = recreate_wiki(list_of_cities)
 
-
-# In[7]:
-
-
 pop_df['timestamp_population'] = pop_df['timestamp_population'].apply(pd.to_datetime)
-
-
-# In[8]:
-
 
 pop_df.info()
 
 
-# In[7]:
-
-
-pop_df
-
-
-# ## weather_table
-
-# In[1]:
-
-
-import pandas as pd
-import requests
-import pytz
-from datetime import datetime
+# weather_table
 
 cities = ["Hamburg", "Berlin", "Munich"]
 API_key = "API KEY"
@@ -173,86 +128,41 @@ def create_df_weather(cities):
   # the filled up dictionary is returned
   return data_dict
 
-
-# In[2]:
-
-
 weather_df = pd.DataFrame(create_df_weather(cities))
 weather_df
 
-
-# In[3]:
-
-
 weather_df[['time', 'information_retrieved_at']] = weather_df[['time', 'information_retrieved_at']].apply(pd.to_datetime)
-
-
-# In[38]:
-
 
 weather_df.info()
 
 
-# ## icao_table
-
-# In[5]:
-
-
-import pandas as pd
+#icao_table
 
 icao_dic = {
     "city_id": [1, 2, 3],
     "airport_icao": ["EDDH", "EDDB", "EDDM"],
 }
 
-
-# In[6]:
-
-
 icao_df = pd.DataFrame(icao_dic)
 icao_df
-
-
-# In[50]:
-
 
 icao_df.info()
 
 
-# ## airport_table
-
-# In[31]:
-
+#airport_table
 
 airport_dic = {
     "airport_icao": ["EDDH", "EDDB", "EDDM"],
     "airport_name": ["Flughafen Hamburg", "Flughafen Berlin Brandenburg", "Flughafen München"]
 }
 
-
-# In[32]:
-
-
 airport_df = pd.DataFrame(airport_dic)
 airport_df
-
-
-# In[102]:
-
 
 airport_df.info()
 
 
-# ## flights_Table
-
-# In[34]:
-
-
-from pytz import timezone
-import pandas as pd
-import requests
-from datetime import datetime, date, timedelta
-
+#flights_Table
 def icao_flight_arr_info(icao):
 
     # creates the date the information was tetrieved
@@ -299,61 +209,24 @@ def icao_flight_arr_info(icao):
 
     return pd.concat(list_for_df, ignore_index=True)
 
-
-# In[35]:
-
-
 # coordinates for Hamburg, Berlin, Munich
 icao = ["EDDH", "EDDB", "EDDM"]
 icao_flight_arr_info_df = icao_flight_arr_info(icao)
 
-
-# In[40]:
-
-
-icao_flight_arr_info_df
-
-
-# In[44]:
-
-
 icao_flight_arr_info_df[['scheduled_time_local', 'information_retrieved_at']] = icao_flight_arr_info_df[['scheduled_time_local', 'information_retrieved_at']].apply(pd.to_datetime)
-
-
-# In[41]:
-
 
 icao_flight_arr_info_df.info()
 
 
-# # SQLAlchemy
-
-# In[8]:
-
+# SQLAlchemy
 
 import sqlalchemy
 
-
-# In[168]:
-
-
 get_ipython().system('pip install sqlalchemy')
-
-
-# In[179]:
-
 
 pip install pymysql
 
-
-# In[9]:
-
-
 import pymysql
-
-
-# In[4]:
-
 
 # connecting to MySQL
 schema="MySQL schema name" 
@@ -364,16 +237,10 @@ port=3306
 con = f'mysql+pymysql://{user}:{password}@{host}:{port}/{schema}'
 
 
-# In[9]:
-
-
 city_df.to_sql('cities', 
               if_exists='append', 
               con=con, 
               index=False)
-
-
-# In[11]:
 
 
 pop_df.to_sql('population', 
@@ -382,16 +249,10 @@ pop_df.to_sql('population',
               index=False)
 
 
-# In[5]:
-
-
 weather_df.to_sql('weather', 
               if_exists='append', 
               con=con, 
               index=False)
-
-
-# In[11]:
 
 
 icao_df.to_sql('icao', 
@@ -400,16 +261,10 @@ icao_df.to_sql('icao',
               index=False)
 
 
-# In[33]:
-
-
 airport_df.to_sql('airports', 
               if_exists='append', 
               con=con, 
               index=False)
-
-
-# In[42]:
 
 
 icao_flight_arr_info_df.to_sql('flights', 
