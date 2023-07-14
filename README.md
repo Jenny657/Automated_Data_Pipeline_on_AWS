@@ -31,4 +31,11 @@ For the lambda functions, ensure that you add layers for the libraries you use:
 
 # Usage
 
-With `Local_DataFrames_with_connection_to_MySQL`, you will find the necessary code to set up a local MySQL database to test the functions. Ensure that you create a suitable MySQL database before attempting to connect the scripts with MySQL.
+With `Local_DataFrames_with_connection_to_MySQL`, you will find the necessary code to set up a local MySQL database to test the functions. Ensure that you create a suitable MySQL database before attempting to connect the scripts with MySQL (For this see `MySQL_schema_set_up`). You can also skip this part and go straight to creating lambda functions on AWS.
+
+I created three separate lambda functions to fill up different tables in my database:
+ - The first function is responsible for populating static tables such as `cities`, `airports` and `icao` (For this see   )
+ - The second function is designed to populate the `population` table with information about the population of each city.
+ - The final function is responsible for populating the relevant weather and flights data into their respective tables.
+
+
